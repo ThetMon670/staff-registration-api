@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Staff;
 use App\Http\Requests\StoreStaffRequest;
 use App\Http\Requests\UpdateStaffRequest;
+use App\Http\Resources\StaffResource;
 
 class StaffController extends Controller
 {
@@ -25,11 +26,13 @@ class StaffController extends Controller
      */
     public function store(StoreStaffRequest $request)
     {
-        $staff = Staff::create($request->validated());
+        $staffData = [...$request->validated(), 'user_id' => auth()->user()->id];
+
+        $staff = Staff::create($staffData);
 
         return response()->json([
-            'data' => $staff,
-            'message' => 'Staff is created successfully',
+            "message" => "Staff created successfully",
+            "data" => new StaffResource($staff)
         ]);
     }
 
@@ -39,8 +42,8 @@ class StaffController extends Controller
     public function show(Staff $staff)
     {
         return response()->json([
-            'data' => $staff,
-            'message' => 'Staff is retrieved'
+            'message' => 'Staff is retrieved successfully',
+            'data' => new StaffResource($staff)
         ]);
     }
 
@@ -53,8 +56,8 @@ class StaffController extends Controller
 
         return response()->json([
             'message' => 'Staff is updated successfully',
-            'data' => $staff
-        ]);
+            'data' => new StaffResource($staff)
+        ], 200);
     }
 
     /**

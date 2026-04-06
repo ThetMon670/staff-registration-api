@@ -14,7 +14,8 @@ class Staff extends Model
         'name',
         'department',
         'phone',
-        'email'
+        'email',
+        'user_id'
     ];
     public function user()
     {
