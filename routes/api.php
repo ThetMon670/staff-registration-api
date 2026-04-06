@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\StaffController;
 use Illuminate\Support\Facades\Route;
@@ -25,4 +26,12 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('staffs', StaffController::class);
 
     });
+    
+    // Staff routes
+    Route::post('attendance/check-in', [AttendanceController::class,'checkIn']);
+    Route::post('attendance/check-out', [AttendanceController::class,'checkOut']);
+    Route::get('attendance/my', [AttendanceController::class,'myAttendance']);
+
+    // Admin routes
+    Route::get('attendance', [AttendanceController::class,'index']); // all attendance
 });

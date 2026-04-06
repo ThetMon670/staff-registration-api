@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Hash;
 
 class UpdateStaffRequest extends FormRequest
 {
@@ -31,6 +32,8 @@ class UpdateStaffRequest extends FormRequest
             'department' => 'required|string|max:255',
             'phone' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255|unique:staff,email,' . $staffId,
+             
+
         ];
     }
 }

@@ -3,26 +3,22 @@
 namespace Database\Seeders;
 
 use App\Models\Staff;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class StaffSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        $staffs = [
+        $staffsData = [
             [
                 'staff_code' => 'STF001',
                 'name' => 'John Doe',
                 'department' => 'IT',
                 'phone' => '0123456789',
                 'email' => 'john@example.com',
-                'user_id' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'password' => 'asdffdsa'
             ],
             [
                 'staff_code' => 'STF002',
@@ -30,9 +26,7 @@ class StaffSeeder extends Seeder
                 'department' => 'HR',
                 'phone' => '0123456790',
                 'email' => 'jane@example.com',
-                'user_id' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'password' => 'asdffdsa'
             ],
             [
                 'staff_code' => 'STF003',
@@ -40,81 +34,29 @@ class StaffSeeder extends Seeder
                 'department' => 'Finance',
                 'phone' => '0123456791',
                 'email' => 'michael@example.com',
-                'user_id' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'password' => 'asdffdsa'
             ],
-            [
-                'staff_code' => 'STF004',
-                'name' => 'Emily Davis',
-                'department' => 'Marketing',
-                'phone' => '0123456792',
-                'email' => 'emily@example.com',
-                'user_id' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'staff_code' => 'STF005',
-                'name' => 'William Johnson',
-                'department' => 'IT',
-                'phone' => '0123456793',
-                'email' => 'william@example.com',
-                'user_id' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'staff_code' => 'STF006',
-                'name' => 'Olivia Wilson',
-                'department' => 'HR',
-                'phone' => '0123456794',
-                'email' => 'olivia@example.com',
-                'user_id' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'staff_code' => 'STF007',
-                'name' => 'James Taylor',
-                'department' => 'Finance',
-                'phone' => '0123456795',
-                'email' => 'james@example.com',
-                'user_id' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'staff_code' => 'STF008',
-                'name' => 'Sophia Anderson',
-                'department' => 'Marketing',
-                'phone' => '0123456796',
-                'email' => 'sophia@example.com',
-                'user_id' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'staff_code' => 'STF009',
-                'name' => 'Daniel Thomas',
-                'department' => 'IT',
-                'phone' => '0123456797',
-                'email' => 'daniel@example.com',
-                'user_id' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'staff_code' => 'STF010',
-                'name' => 'Isabella Martin',
-                'department' => 'HR',
-                'phone' => '0123456798',
-                'email' => 'isabella@example.com',
-                'user_id' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+            // Add more staff as needed
         ];
-        Staff::insert($staffs);
+
+        foreach ($staffsData as $data) {
+            // 1️⃣ Create a User first
+            $user = User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
+                'role' => 'staff',
+            ]);
+
+            // 2️⃣ Create Staff and link to user
+            Staff::create([
+                'staff_code' => $data['staff_code'],
+                'name' => $data['name'],
+                'department' => $data['department'],
+                'phone' => $data['phone'],
+                'email' => $data['email'],
+                'user_id' => $user->id,
+            ]);
+        }
     }
 }

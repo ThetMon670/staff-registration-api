@@ -6,6 +6,8 @@ use App\Models\Staff;
 use App\Http\Requests\StoreStaffRequest;
 use App\Http\Requests\UpdateStaffRequest;
 use App\Http\Resources\StaffResource;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class StaffController extends Controller
 {
@@ -26,7 +28,14 @@ class StaffController extends Controller
      */
     public function store(StoreStaffRequest $request)
     {
-        $staffData = [...$request->validated(), 'user_id' => auth()->user()->id];
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password ?? 'default123'),
+            'role' => 'staff',
+        ]);
+
+        $staffData = [...$request->validated(), 'user_id' => user()->id];
 
         $staff = Staff::create($staffData);
 
