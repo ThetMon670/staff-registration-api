@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\StaffController;
 use Illuminate\Support\Facades\Route;
@@ -15,14 +16,27 @@ Route::prefix('v1')->group(function () {
         ]);
     });
 
-    Route::post('register', [AuthController::class,'register']);
-    Route::post('login', [AuthController::class,'login']);
+    // Public routes
+    Route::post('register', [AuthController::class, 'register']);
+    Route::post('login', [AuthController::class, 'login']);
 
+    // Protected routes
     Route::middleware('auth:sanctum')->group(function () {
 
-        Route::post('logout', [AuthController::class,'logout']);
+        Route::post('logout', [AuthController::class, 'logout']);
 
+        // Staff Management (Admin)
         Route::apiResource('staffs', StaffController::class);
 
+        // Staff Profile
+        Route::get('my-profile', [StaffController::class, 'myProfile']);
+
+        // Attendance (Staff)
+        Route::post('attendance/check-in', [AttendanceController::class, 'checkIn']);
+        Route::post('attendance/check-out', [AttendanceController::class, 'checkOut']);
+        Route::get('attendance/my', [AttendanceController::class, 'myAttendance']);
+
+        // Attendance (Admin)
+        Route::get('attendance', [AttendanceController::class, 'index']);
     });
 });

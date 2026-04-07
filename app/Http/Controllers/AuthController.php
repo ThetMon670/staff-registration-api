@@ -11,6 +11,10 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
+        if (auth()->user()->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
@@ -21,10 +25,8 @@ class AuthController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => $validated['password'],
+            'role' => 'staff'  // ← Set role directly in create
         ]);
-
-        $user->role = 'admin';
-        $user->save();
 
         $token = $user->createToken('api-token')->plainTextToken;
 
