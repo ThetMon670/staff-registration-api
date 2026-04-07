@@ -27,13 +27,9 @@ class UpdateStaffRequest extends FormRequest
         $staffId = $this->route('staff')->id;
 
         return [
-            'staff_code' => 'required|string|max:50|unique:staff,staff_code,' . $staffId,
-            'name' => 'required|string|max:255',
-            'department' => 'required|string|max:255',
+            'name' => 'nullable|string|max:255',
+            'department' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:255|unique:staff,email,' . $staffId,
-             
-
         ];
     }
 }

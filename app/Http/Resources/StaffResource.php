@@ -22,7 +22,7 @@ class StaffResource extends JsonResource
             "phone" => $this->phone,
             "email" => $this->email,
             "user_id" => $this->user_id,
-            "user" => $this->user,
+            "role" => $this->user->role,
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at
         ];
