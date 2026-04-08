@@ -16,18 +16,79 @@ class StaffController extends Controller
     /**
      * Admin: View all staff
      */
-    public function index()
+    public function index(Request $request)
     {
         if (!Gate::allows('isAdmin')) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $staffs = Staff::with('user')->get();
+        // GET SEARCH PARAMETERS
+        $searchTerm = $request->input('q');
+        $department = $request->input('department');
 
-        return response()->json([
-            'message' => 'Staffs retrieved successfully',
-            'data' => StaffResource::collection($staffs)
+        // VALIDATE AND SET SORTING PARAMETERS
+        $validSortColumns = [
+            'id',
+            'staff_code',
+            'name',
+            'email',
+            'phone',
+            'department',
+            'created_at'
+        ];
+
+        $sortBy = in_array($request->input('sort_by'), $validSortColumns, true)
+            ? $request->input('sort_by')
+            : 'id';
+
+        $sortDirection = in_array($request->input('sort_direction'), ['asc', 'desc'], true)
+            ? $request->input('sort_direction')
+            : 'desc';
+
+        // VALIDATE AND SET PAGINATION LIMIT
+        $limit = $request->input('limit', 5);
+        $limit = is_numeric($limit) && $limit > 0 && $limit <= 100
+            ? (int) $limit
+            : 10;
+
+        // INITIALIZE QUERY
+        $query = Staff::with('user');
+
+        // APPLY SEARCH FILTER
+        if ($searchTerm) {
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('name', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('email', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('phone', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('staff_code', 'like', '%' . $searchTerm . '%');
+            });
+        }
+
+        // APPLY DEPARTMENT FILTER
+        if ($department) {
+            $query->where('department', '=', $department);
+        }
+
+        // APPLY SORTING
+        $query->orderBy($sortBy, $sortDirection);
+
+        // EXECUTE PAGINATED QUERY
+        $staffs = $query->paginate($limit);
+
+        // PRESERVE QUERY PARAMETERS IN PAGINATION LINKS
+        $staffs->appends([
+            'q' => $searchTerm,
+            'department' => $department,
+            'sort_by' => $sortBy,
+            'sort_direction' => $sortDirection,
+            'limit' => $limit,
         ]);
+
+        // RETURN RESOURCE COLLECTION
+        return StaffResource::collection($staffs)
+            ->additional([
+                'message' => 'Staff retrieved successfully',
+            ]);
     }
 
     /**
