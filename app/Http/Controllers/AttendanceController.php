@@ -63,7 +63,7 @@ class AttendanceController extends Controller
     }
 
     // Admin view all attendances
-    public function index()
+    public function index(Request $request)
     {
         if (!Gate::allows('isAdmin')) {
             return response()->json([
@@ -71,10 +71,20 @@ class AttendanceController extends Controller
             ], 403);
         }
 
-        $attendances = Attendance::with('staff')->get();
+        // Pagination and sorting
+        $limit = $request->input('limit', 10);
+        $sortBy = $request->input('sort_by', 'date');
+        $sortDirection = $request->input('sort_direction', 'desc');
+
+        $attendances = Attendance::with('staff')
+            ->orderBy($sortBy, $sortDirection)
+            ->paginate($limit);
+
+        // Preserve query params
+        $attendances->appends($request->all());
 
         return response()->json([
-            'message' => 'All attendances retrieved successfully',
+            'message' => 'Attendances retrieved successfully',
             'data' => $attendances
         ]);
     }
